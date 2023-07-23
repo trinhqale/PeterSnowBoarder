@@ -1,16 +1,20 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
-using Vector3 = System.Numerics.Vector3;
 
 public class CrashDetector : MonoBehaviour
 {
     [SerializeField] private Sprite deathPose;
     [SerializeField] private Sprite happy;
+    [SerializeField] private AudioClip crashSFX;
+    [SerializeField] private AudioClip yaySFX;
     private SpriteRenderer spriteRenderer;
     private Rigidbody2D rb2d;
+
     // Start is called before the first frame update
     private void Start()
     {
@@ -31,7 +35,9 @@ public class CrashDetector : MonoBehaviour
             }
             transform.Translate(0, 2, 0);
             transform.Rotate(0,0,180);
+            GetComponent<AudioSource>().PlayOneShot(crashSFX);
             rb2d.constraints = RigidbodyConstraints2D.FreezeAll;
+            GetComponent<AudioSource>().Play();
             Invoke("ReloadScene", 1f);
         }
         else if (other.gameObject.tag == "Finish")
@@ -42,6 +48,12 @@ public class CrashDetector : MonoBehaviour
             {
                 child.gameObject.SetActive(false);
             }
+
+            transform.eulerAngles = new Vector3(0, 0, 0);
+            transform.Translate(5,5,0);
+
+            GetComponent<AudioSource>().PlayOneShot(yaySFX);
+            rb2d.constraints = RigidbodyConstraints2D.FreezeAll;
             Invoke("ReloadScene", 2f);
         }
     }
